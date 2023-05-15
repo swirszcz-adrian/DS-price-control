@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,36 +9,53 @@ namespace PriceControl;
 
 class Producer
 {
-    private static Random rand = new Random();
-
-    public int Id { get; }
-    public int Stock { get; private set; }
-    public int Price { get; }
-
-    public Producer(int id, int initialStock, int price)
+    public Producer(uint id, StockItem stockItem)
     {
-        Id = id;
-        Stock = initialStock;
-        Price = price;
+        this.Id = id;
+        this.Stock = new List<StockItem>() { stockItem };
     }
 
-    public int SellGoods(int quantity)
+    public Producer(uint id, List<StockItem> initialStock)
     {
-        int sellableQuantity = Math.Min(quantity, Stock);
-        Stock -= sellableQuantity;
-        return sellableQuantity;
+        this.Id = id;
+        this.Stock = initialStock;
+    }
+
+    public async Task GetProductInfoAsync(Product product)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task GetProductInfoAsync(uint productId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task GetProductInfoAsync(string? productName = null, uint? minPrice = null, uint? maxPrice = null, List<string>? tags = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task SellProductAsync(Product product, uint quantity = 1)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task SellProductAsync(uint productId, uint quantity = 1)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task ProduceGoodsAsync()
     {
-        while (true)
-        {
-            if (Stock < 50) // Minimalny poziom towaru
-            {
-                Stock += rand.Next(50, 101); // Produkcja nowego towaru
-                Console.WriteLine($"Producer {Id} produced goods. Current stock: {Stock}");
-            }
-            await Task.Delay(1000); // Czas produkcji
-        }
+        throw new NotImplementedException();
     }
+
+    public async Task UpdatePrices()
+    {
+        throw new NotImplementedException();
+    }
+
+    public uint Id { get; }
+    public List<StockItem> Stock { get; private set; }
 }

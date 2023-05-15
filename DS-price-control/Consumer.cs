@@ -8,11 +8,9 @@ namespace PriceControl;
 
 class Consumer
 {
-    private AddressBook _addressBook;
-
     public Consumer(AddressBook addressBook)
     {
-        _addressBook = addressBook;
+        _Producers = addressBook;
     }
 
     public async Task BuyGoodsAsync(int quantity)
@@ -20,7 +18,7 @@ class Consumer
         while (quantity > 0)
         {
             // Wybór producenta - najpierw najtańszego, potem losowego
-            var producer = _addressBook.GetProducers().OrderBy(p => p.Price).ThenBy(p => Guid.NewGuid()).FirstOrDefault();
+            var producer = _Producers.GetProducers().OrderBy(p => p.Price).ThenBy(p => Guid.NewGuid()).FirstOrDefault();
 
             if (producer != null)
             {
@@ -37,4 +35,6 @@ class Consumer
             await Task.Delay(1000); // Czas na przetworzenie transakcji
         }
     }
+
+    private List<Producer> _Producers;
 }
