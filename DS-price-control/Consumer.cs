@@ -10,12 +10,17 @@ class Consumer
 {
     public Consumer(AddressBook addressBook)
     {
-        _Producers = addressBook;
+        GetCurrentAddressBookAsync();
+    }
+
+    public async Task RequestGoodsInfoAsync()
+    {
+        throw new NotImplementedException();
     }
 
     public async Task BuyGoodsAsync(int quantity)
     {
-        while (quantity > 0)
+/*        while (quantity > 0)
         {
             // Wybór producenta - najpierw najtańszego, potem losowego
             var producer = _Producers.GetProducers().OrderBy(p => p.Price).ThenBy(p => Guid.NewGuid()).FirstOrDefault();
@@ -33,7 +38,17 @@ class Consumer
             }
 
             await Task.Delay(1000); // Czas na przetworzenie transakcji
-        }
+        }*/
+    }
+
+    public async Task MakeDecisionAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task GetCurrentAddressBookAsync()
+    {
+        throw new NotImplementedException();
     }
 
     private List<Producer> _Producers;

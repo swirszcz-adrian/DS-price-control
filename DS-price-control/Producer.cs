@@ -21,6 +21,12 @@ class Producer
         this.Stock = initialStock;
     }
 
+    ~Producer()
+    {
+        RequestRemovalFromAddressBook();
+        throw new NotImplementedException();
+    }
+
     public async Task GetProductInfoAsync(Product product)
     {
         throw new NotImplementedException();
@@ -51,7 +57,17 @@ class Producer
         throw new NotImplementedException();
     }
 
-    public async Task UpdatePrices()
+    public async Task UpdatePriceAsyncs()
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task RequestAdditionToAddressBook()
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task RequestRemovalFromAddressBook()
     {
         throw new NotImplementedException();
     }
