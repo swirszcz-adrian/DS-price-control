@@ -11,7 +11,7 @@ class PriceControl
 {
     static async Task Main()
     {
-        // Tworzenie producentów
+        /*// Tworzenie producentów
         ConcurrentBag<Producer> producers = new ConcurrentBag<Producer>()
         {
             new Producer(1, 100, 10),
@@ -34,6 +34,6 @@ class PriceControl
         var consumerTask = consumer.BuyGoodsAsync(100);
 
         // Czekanie na zakończenie wszystkich zadań
-        await Task.WhenAll(producerTasks.Concat(new[] { consumerTask }));
+        await Task.WhenAll(producerTasks.Concat(new[] { consumerTask }));*/
     }
 }
