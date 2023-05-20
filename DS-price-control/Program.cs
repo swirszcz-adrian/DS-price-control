@@ -35,5 +35,16 @@ class PriceControl
 
         // Czekanie na zakończenie wszystkich zadań
         await Task.WhenAll(producerTasks.Concat(new[] { consumerTask }));*/
+        Product prd = new Product(0, "012345678901234567890123456789", "xvxcvcxvxcvcxcvxcvxcvcxvxcvxcvcxvcxvxvxcvxcvcxvxcvxcvxcvxcvcxvcxvxcvxcvxcvcxvxc");
+        Product prd2 = new Product(1, "0123", "xvcvxc");
+        Product prd3 = new Product(2, "012345678901234567890123456789", "xvxcvcxvxcvcxcvxcvxcvcxvxcvxcvcxvcxvxvxcvxcvcxvxcvxcvxcvxcvcxvcxvxcvxcvxcvcxvxc");
+        Producer producer = new Producer(2, 
+            new List<Producer.ProducerItem> () {
+                new Producer.ProducerItem(prd, 20, 4),
+                new Producer.ProducerItem(prd2, 20, 4),
+                new Producer.ProducerItem(prd3, 20, 4)
+                }
+            );
+        Console.WriteLine(producer.ToString());
     }
 }

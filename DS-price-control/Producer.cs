@@ -88,22 +88,29 @@ class Producer
         PriceUpdateDelegate PriceUpdateFunction { get; set; }
     }
 
-    public Producer(uint id, StockItem stockItem)
+    public Producer(uint id, ProducerItem producerItem)
     {
         this.Id = id;
-        this.Stock = new List<StockItem>() { stockItem };
+        this.Magazine = new List<ProducerItem>() { producerItem };
     }
 
-    public Producer(uint id, List<StockItem> initialStock)
+    public Producer(uint id, List<ProducerItem> initialMagazineState)
     {
         this.Id = id;
-        this.Stock = initialStock;
+        this.Magazine = initialMagazineState;
     }
 
     ~Producer()
     {
-        RequestRemovalFromAddressBook();
-        throw new NotImplementedException();
+        _ = RequestRemovalFromAddressBook();
+    }
+
+    public override string ToString()
+    {
+        string str = "Magazine state of producer #" + this.Id.ToString() + ":\n";
+        str += "ID   | NAME       | DESCRIPTION          | TAGS\n";
+        foreach (ProducerItem item in this.Magazine) { str += item.Product.ToString(); }
+        return str;
     }
 
     public async Task GetProductInfoAsync(Product product)
@@ -143,14 +150,14 @@ class Producer
 
     public async Task RequestAdditionToAddressBook()
     {
-        throw new NotImplementedException();
+        Console.WriteLine("[WARN] : Function RequestAdditionToAddressBook() has not been implemented yet!");
     }
 
     public async Task RequestRemovalFromAddressBook()
     {
-        throw new NotImplementedException();
+        Console.WriteLine("[WARN] : Function RequestRemovalFromAddressBook() has not been implemented yet!");
     }
 
     public uint Id { get; }
-    public List<StockItem> Stock { get; private set; }
+    public List<ProducerItem> Magazine { get; }
 }
