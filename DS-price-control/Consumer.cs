@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static PriceControl.Producer;
 
 namespace PriceControl;
 
@@ -11,6 +12,7 @@ class Consumer
     public Consumer(AddressBook addressBook)
     {
         GetCurrentAddressBookAsync();
+        UpdateWishListAsync();
     }
 
     public async Task RequestGoodsInfoAsync()
@@ -41,15 +43,29 @@ class Consumer
         }*/
     }
 
-    public async Task MakeDecisionAsync()
+    private async Task MakeDecisionAsync()
     {
         throw new NotImplementedException();
     }
 
-    public async Task GetCurrentAddressBookAsync()
+    private async Task GetCurrentAddressBookAsync()
     {
         throw new NotImplementedException();
     }
+
+    private async Task UpdateWishListAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    private async Task GenerateMoney()
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<StockItem> Wishlist { get; }
 
     private List<Producer> _Producers;
+
+    private uint Money;
 }

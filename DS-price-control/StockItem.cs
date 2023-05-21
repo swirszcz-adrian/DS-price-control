@@ -14,7 +14,6 @@ class StockItem
         this.Product = product;
         this.Price = price;
         this.Quantity = quantity;
-        
     }
 
     public StockItem(uint id, string name, float price, string description = "", List<string>? tags = null, uint quantity = 0)
