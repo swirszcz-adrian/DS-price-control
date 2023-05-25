@@ -11,6 +11,34 @@ namespace PriceControl;
 
 class Consumer
 {
+    /// <summary>
+    /// Represents a consumer order for a specific product.
+    /// </summary>
+    class Order
+    {
+        /// <summary>
+        /// Initializes a new instance of the Order class.
+        /// </summary>
+        /// <param name="product">The product to be ordered.</param>
+        /// <param name="amount">The amount of product to be ordered. Defaults to null.</param>
+        /// <param name="preferredUnitPrice">The preferred unit price for the product. Defaults to null.</param>
+        /// <param name="potentialSellers">A list of potential sellers for the product. Defaults to null.</param>
+        public Order(Product product, uint? amount = null, uint? preferredUnitPrice = null, List<Producer>? potentialSellers = null) 
+        {
+            this.Product = product;
+            this.Amount = amount;
+            this.PreferredUnitPrice = preferredUnitPrice;
+            this.PotentialSellers = potentialSellers;
+            this.IsRealised = false;
+        }
+
+        public Product Product { get; set; }
+        public uint? Amount { get; set; }
+        public uint? PreferredUnitPrice { get; set; }
+        public List<Producer>? PotentialSellers { get; set; }
+        public bool IsRealised { get; set; }
+    }
+
     public Consumer(AddressBook addressBook)
     {
         _Timer = new System.Timers.Timer(1000); // Wywołuje metodę co 1 sekundę (1000 milisekund)
@@ -62,7 +90,7 @@ class Consumer
         throw new NotImplementedException();
     }
 
-    private async Task UpdateWishListAsync()
+    private async Task UpdateProductsListAsync()
     {
         throw new NotImplementedException();
     }
@@ -73,6 +101,17 @@ class Consumer
         Console.WriteLine("Dodano środki");
     }
 
+    private void ChooseProductToBuy()
+    {
+        UpdateProductsListAsync();
+
+        Random rnd = new Random();
+        int rndIndex = rnd.Next(ProductOnTheMarket.Count);
+        Product rndProduct = ProductOnTheMarket[rndIndex];
+
+        this.CurrentOrder = new Order(rndProduct);
+    }
+
     private void EventManager(Object source, ElapsedEventArgs e)
     {
         MakeDecision();
@@ -80,7 +119,8 @@ class Consumer
         GenerateMoney(10);
     }
 
-    public List<StockItem> Wishlist { get; }
+    public List<Product> ProductOnTheMarket { get; }
+    private Order CurrentOrder;
 
     private System.Timers.Timer _Timer;
 
