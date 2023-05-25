@@ -46,5 +46,9 @@ class PriceControl
                 }
             );
         Console.WriteLine(producer.ToString());
+
+        AddressBook ad = new AddressBook();
+
+        Consumer c1 = new Consumer(ad);
     }
 }
