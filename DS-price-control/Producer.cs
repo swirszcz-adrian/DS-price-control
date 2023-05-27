@@ -168,18 +168,18 @@ class Producer
     }
 
 
-    public Task<StockItem> GetProductInfoAsync(Product product)
+    public Task<StockItem?> GetItemInfoAsync(Product product)
     {
 
         throw new NotImplementedException();
     }
 
-    public Task<StockItem> GetProductInfoAsync(uint productId)
+    public Task<StockItem?> GetItemInfoAsync(uint productId)
     {
         throw new NotImplementedException();
     }
 
-    public Task<List<StockItem>> GetProductListAsync(string? productName = null, uint? minPrice = null, uint? maxPrice = null, List<string>? tags = null)
+    public Task<List<StockItem>> GetItemListAsync(string? productName = null, uint? minPrice = null, uint? maxPrice = null, List<string>? tags = null)
     {
         throw new NotImplementedException();
     }
