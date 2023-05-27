@@ -23,6 +23,12 @@ class StockItem
         this.Quantity = quantity;
     }
 
+    public StockItem Copy()
+    {
+        return new StockItem(this.Product, this.Price, this.Quantity);  // Product is a struct
+                                                                        // therefore it's copied by value
+    }
+
     public Product Product { get; }
     public float Price { get; set; }
     public uint Quantity { get; set; }

@@ -38,17 +38,22 @@ class PriceControl
         Product prd = new Product(0, "012345678901234567890123456789", "xvxcvcxvxcvcxcvxcvxcvcxvxcvxcvcxvcxvxvxcvxcvcxvxcvxcvxcvxcvcxvcxvxcvxcvxcvcxvxc");
         Product prd2 = new Product(1, "0123", "xvcvxc");
         Product prd3 = new Product(2, "012345678901234567890123456789", "xvxcvcxvxcvcxcvxcvxcvcxvxcvxcvcxvcxvxvxcvxcvcxvxcvxcvxcvxcvcxvcxvxcvxcvxcvcxvxc");
-        Producer producer = new Producer(2, 
+        Producer producer = new Producer(2, 500,
             new List<Producer.ProducerItem> () {
-                new Producer.ProducerItem(prd, 20, 4),
-                new Producer.ProducerItem(prd2, 20, 4),
-                new Producer.ProducerItem(prd3, 20, 4)
+                new Producer.ProducerItem(prd, 20, 100),
+                new Producer.ProducerItem(prd2, 20, 200),
+                new Producer.ProducerItem(prd3, 20, 130)
                 }
             );
-        Console.WriteLine(producer.ToString());
+        for (int i = 0; i < 20; i++)
+        {
+            Console.WriteLine(producer.ToFullString());
+            Thread.Sleep(2000);
+        }
+        
 
-        AddressBook ad = new AddressBook();
+/*        AddressBook ad = new AddressBook();
 
-        Consumer c1 = new Consumer(ad);
+        Consumer c1 = new Consumer(ad);*/
     }
 }

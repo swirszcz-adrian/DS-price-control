@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace PriceControl;
 
@@ -61,6 +62,19 @@ class Producer
             this.PriceUpdateFunction = priceUpdateFunction ?? BasicFiveSegmentPriceUpdate;
         }
 
+        public override string ToString()
+        {
+            string nameStr = this.Product.Name.Length < 10 ? this.Product.Name : this.Product.Name.Substring(0, 10 - 3) + "...";
+            string descriptionStr = this.Product.Description.Length < 20 ? this.Product.Description : this.Product.Description.Substring(0, 20 - 3) + "...";
+
+            string tagsStr = string.Empty;
+            foreach (string tag in this.Product.Tags) { tagsStr += "<" + tag + "> "; }
+            tagsStr = tagsStr.Length < 20 ? tagsStr : tagsStr.Substring(0, 20 - 3) + "...";
+
+            string str = string.Format("{0,4} | {1, 10} | {2, 6} | {3, 6} | {4, 20} | {5, 20}\n", this.Product.Id, nameStr, this.Price, this.Quantity, descriptionStr, tagsStr);
+            return str;
+        }
+
         public void Produce()
         {
             if (this.Quantity < this.MaxStorageSpace)
@@ -88,62 +102,94 @@ class Producer
         PriceUpdateDelegate PriceUpdateFunction { get; set; }
     }
 
-    public Producer(uint id, ProducerItem producerItem)
+    public Producer(uint id, uint ProductionTimeMS, ProducerItem producerItem)
     {
         this.Id = id;
+        this._ProductionTimer = new System.Timers.Timer(ProductionTimeMS);
+        this._ProductionTimer.Elapsed +=  this.ProductionTimerCallback;
+        this._ProductionTimer.AutoReset = true;
+        this._ProductionTimer.Enabled = true;
         this.Magazine = new List<ProducerItem>() { producerItem };
     }
 
-    public Producer(uint id, List<ProducerItem> initialMagazineState)
+    public Producer(uint id, uint ProductionTimeMS, List<ProducerItem> initialMagazineState)
     {
         this.Id = id;
+        this._ProductionTimer = new System.Timers.Timer(ProductionTimeMS);
+        this._ProductionTimer.Elapsed += this.ProductionTimerCallback;
+        this._ProductionTimer.AutoReset = true;
+        this._ProductionTimer.Enabled = true;
         this.Magazine = initialMagazineState;
     }
 
     ~Producer()
     {
-        _ = RequestRemovalFromAddressBook();
+        this._ProductionTimer.Stop();
+        this._ProductionTimer.Dispose();
+        _ = this.RequestRemovalFromAddressBook();
     }
 
     public override string ToString()
     {
         string str = "Magazine state of producer #" + this.Id.ToString() + ":\n";
-        str += "ID   | NAME       | DESCRIPTION          | TAGS\n";
+        str += "ID   | NAME       | DESCRIPTION          | TAGS                \n";
         foreach (ProducerItem item in this.Magazine) { str += item.Product.ToString(); }
         return str;
     }
 
-    public async Task GetProductInfoAsync(Product product)
+    public string ToFullString()
+    {
+        string str = "Magazine state of producer #" + this.Id.ToString() + ":\n";
+        str += "ID   | NAME       | PRICE  | NUMBER | DESCRIPTION          | TAGS                \n";
+        foreach (ProducerItem item in this.Magazine) { str += item.ToString(); }
+        return str;
+    }
+
+    private void ProductionTimerCallback(Object? source, ElapsedEventArgs e)
+    {
+        this.ProduceGoods();
+        this.UpdatePrices();
+    }
+
+    private void ProduceGoods()
+    {
+        foreach (ProducerItem Item in this.Magazine)
+        {
+            Item.Produce();
+        }
+    }
+
+    private void UpdatePrices()
+    {
+        foreach (ProducerItem Item in this.Magazine)
+        {
+            Item.UpdatePrice();
+        }
+    }
+
+
+    public Task<StockItem> GetProductInfoAsync(Product product)
+    {
+
+        throw new NotImplementedException();
+    }
+
+    public Task<StockItem> GetProductInfoAsync(uint productId)
     {
         throw new NotImplementedException();
     }
 
-    public async Task GetProductInfoAsync(uint productId)
+    public Task<List<StockItem>> GetProductListAsync(string? productName = null, uint? minPrice = null, uint? maxPrice = null, List<string>? tags = null)
     {
         throw new NotImplementedException();
     }
 
-    public async Task GetProductInfoAsync(string? productName = null, uint? minPrice = null, uint? maxPrice = null, List<string>? tags = null)
+    public Task<List<StockItem>> SellProductAsync(Product product, uint quantity = 1)
     {
         throw new NotImplementedException();
     }
 
-    public async Task SellProductAsync(Product product, uint quantity = 1)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task SellProductAsync(uint productId, uint quantity = 1)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task ProduceGoodsAsync()
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task UpdatePriceAsyncs()
+    public Task SellProductAsync(uint productId, uint quantity = 1)
     {
         throw new NotImplementedException();
     }
@@ -159,5 +205,6 @@ class Producer
     }
 
     public uint Id { get; }
+    private System.Timers.Timer _ProductionTimer;
     public List<ProducerItem> Magazine { get; }
 }
