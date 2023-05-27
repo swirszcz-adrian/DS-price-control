@@ -168,31 +168,67 @@ class Producer
     }
 
 
-    public Task<StockItem?> GetItemInfoAsync(Product product)
+    public StockItem? GetItemInfo(Product product)
     {
-
-        throw new NotImplementedException();
+        return this.GetItemInfo(product.Id);
     }
 
-    public Task<StockItem?> GetItemInfoAsync(uint productId)
+    public StockItem? GetItemInfo(uint productId)
     {
-        throw new NotImplementedException();
+        ProducerItem? item = this.Magazine.FirstOrDefault(it => it.Product.Id == productId);
+        return item != null ? item.Copy() : null;
     }
 
-    public Task<List<StockItem>> GetItemListAsync(string? productName = null, uint? minPrice = null, uint? maxPrice = null, List<string>? tags = null)
+    public List<StockItem> GetItemList(string? productName = null, uint? minPrice = null, uint? maxPrice = null, List<string>? tags = null)
     {
-        throw new NotImplementedException();
+        List<ProducerItem> refList = this.Magazine;
+        if (refList.Any() && productName != null)
+        {
+            refList.RemoveAll(item => item.Product.Name != productName);
+        }
+        if (refList.Any() && minPrice != null)
+        {
+            refList.RemoveAll(item => item.Price < minPrice);
+        }
+        if (refList.Any() && maxPrice != null)
+        {
+            refList.RemoveAll(item => item.Price > maxPrice);
+        }
+        if (refList.Any() && tags != null)
+        {
+            refList.RemoveAll(item => !item.Product.ContainsTag(tags));
+        }
+
+        List<StockItem> returnList = new List<StockItem>();
+        foreach (var reference in refList)
+        {
+            returnList.Add(reference.Copy());
+        }
+        return returnList;
     }
 
-    public Task<List<StockItem>> SellProductAsync(Product product, uint quantity = 1)
+    public StockItem? SellProduct(uint productId, uint quantity = 1)
     {
-        throw new NotImplementedException();
+        ProducerItem? item = this.Magazine.FirstOrDefault(item => item.Product.Id == productId);
+        if (item == null)
+        {
+            Console.WriteLine("[WARN] : Producer #{} failed to sell product #{} - this producer those not produce product with this id!", this.Id, productId);
+            return null;
+        }
+        else if (item.Quantity < quantity) 
+        {
+            Console.WriteLine("[INFO] : Producer #{} failed to sell {} units of product product #{} - only {} are left in the storage!", this.Id, quantity, productId, item.Quantity);
+            return null;
+        }
+        else
+        {
+            item.Quantity -= quantity;
+            Console.WriteLine("[INFO] : Producer #{} sold {} units of product #{} - {} remaining.", this.Id, quantity, productId, item.Quantity);
+            return new StockItem(item.Product, item.Price, item.Quantity);
+            
+        }
     }
 
-    public Task SellProductAsync(uint productId, uint quantity = 1)
-    {
-        throw new NotImplementedException();
-    }
 
     public async Task RequestAdditionToAddressBook()
     {

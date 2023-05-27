@@ -7,17 +7,22 @@ using System.Threading.Tasks;
 
 namespace PriceControl;
 
-class AddressBook
+static class AddressBook
 {
-    private ConcurrentBag<Producer> _producers = new ConcurrentBag<Producer>();
+    private static List<Producer> _Producers = new List<Producer>();
 
-    public void AddProducer(Producer producer)
+    public static List<Producer> GetProducers()
     {
-        _producers.Add(producer);
+        return new List<Producer>(_Producers);
     }
 
-    public IEnumerable<Producer> GetProducers()
+    public static void AddProducer(Producer producer)
     {
-        return _producers;
+        AddressBook._Producers.Add(producer);
+    }
+
+    public static void RemoveProducer(Producer producer)
+    {
+        AddressBook._Producers.Remove(producer);
     }
 }
