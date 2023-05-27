@@ -90,9 +90,37 @@ class Consumer
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Asynchronously updates the list of products and stock items available on the market from all the producers.
+    /// </summary>
+    /// <remarks>
+    /// This method initiates an asynchronous task for each producer in the _Producers list to retrieve a list of stock items. 
+    /// The resulting lists of stock items are consolidated into a single list, which is then assigned to the StockOnTheMarket property. 
+    /// In addition, each stock item's associated product is added to the ProductOnTheMarket property, which is a list of unique products.
+    /// </remarks>
     private async Task UpdateProductsListAsync()
     {
-        throw new NotImplementedException();
+        List<Task<List<StockItem>>> tasks = new List<Task<List<StockItem>>>();
+        List<StockItem> allStockOnTheMarket = new List<StockItem>();
+        List<Product> allProductOnTheMarket = new List<Product>();
+
+        foreach (Producer producer in _Producers)
+        {
+            tasks.Add(producer.GetItemListAsync());
+        }
+
+        foreach (Task<List<StockItem>> task in tasks)
+        {
+            List<StockItem> stockItemsBatch = await task;
+            foreach (StockItem stockItem in stockItemsBatch)
+            {
+                allStockOnTheMarket.Add(stockItem);
+                allProductOnTheMarket.Add(stockItem.Product);
+            }
+        }
+
+        this.StockOnTheMarket = allStockOnTheMarket;
+        this.ProductOnTheMarket = new HashSet<Product>(allProductOnTheMarket).ToList();
     }
 
     private void GenerateMoney(uint amount)
@@ -119,7 +147,8 @@ class Consumer
         GenerateMoney(10);
     }
 
-    public List<Product> ProductOnTheMarket { get; }
+    public List<Product> ProductOnTheMarket { get; set; }
+    public List<StockItem> StockOnTheMarket { get; set; }
     private Order CurrentOrder;
 
     private System.Timers.Timer _Timer;
