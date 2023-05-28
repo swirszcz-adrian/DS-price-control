@@ -183,7 +183,7 @@ class Producer
 
     public List<StockItem> GetItemList(string? productName = null, uint? minPrice = null, uint? maxPrice = null, List<string>? tags = null)
     {
-        List<ProducerItem> refList = this.Magazine;
+        List<ProducerItem> refList = new List<ProducerItem>(this.Magazine);
         if (refList.Any() && productName != null)
         {
             refList.RemoveAll(item => item.Product.Name != productName);
