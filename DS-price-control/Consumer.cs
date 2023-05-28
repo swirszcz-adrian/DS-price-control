@@ -157,7 +157,25 @@ class Consumer
 
     private void FillOrderDetails()
     {
-        foreach ()
+        float averagePrice = 0.0f;
+        uint averageQuantity = 0;
+        uint potentialSellersNum = 0;
+
+        foreach (StockItem stockItem in StockOnTheMarket)
+        {
+            if (stockItem.Product.Id == this.CurrentOrder.ProductId)
+            {
+                averagePrice += stockItem.Price;
+                averageQuantity += stockItem.Quantity;
+                potentialSellersNum ++;
+            }
+        }
+
+        if (potentialSellersNum != 0)
+        {
+            averagePrice /= potentialSellersNum;
+            averageQuantity /= potentialSellersNum;
+        }
         Random rnd = new Random();
         int rndIndex = rnd.Next(ProductOnTheMarket.Count);
         Product rndProduct = ProductOnTheMarket[rndIndex];
