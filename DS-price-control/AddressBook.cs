@@ -18,6 +18,10 @@ static class AddressBook
 
     public static void AddProducer(Producer producer)
     {
+        if (AddressBook._Producers.Any(prod => prod.Id == producer.Id))
+        {
+            throw new InvalidOperationException("Address book cannot have two producers with the same ID!");
+        }
         AddressBook._Producers.Add(producer);
     }
 
@@ -25,4 +29,6 @@ static class AddressBook
     {
         AddressBook._Producers.Remove(producer);
     }
+
+    
 }

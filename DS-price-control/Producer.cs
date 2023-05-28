@@ -109,7 +109,7 @@ class Producer
         this._ProductionTimer.Elapsed +=  this.ProductionTimerCallback;
         this._ProductionTimer.AutoReset = true;
         this._ProductionTimer.Enabled = true;
-        this.Magazine = new List<ProducerItem>() { producerItem };
+        this._Magazine = new List<ProducerItem>() { producerItem };
         this.RequestAdditionToAddressBook();
     }
 
@@ -120,7 +120,11 @@ class Producer
         this._ProductionTimer.Elapsed += this.ProductionTimerCallback;
         this._ProductionTimer.AutoReset = true;
         this._ProductionTimer.Enabled = true;
-        this.Magazine = initialMagazineState;
+        this._Magazine = new List<ProducerItem>();
+        foreach (ProducerItem item in initialMagazineState)
+        {
+            this.AddItemToMagazine(item);
+        }
         this.RequestAdditionToAddressBook();
     }
 
@@ -135,7 +139,7 @@ class Producer
     {
         string str = "Magazine state of producer #" + this.Id.ToString() + ":\n";
         str += "ID   | NAME       | DESCRIPTION          | TAGS                \n";
-        foreach (ProducerItem item in this.Magazine) { str += item.Product.ToString(); }
+        foreach (ProducerItem item in this._Magazine) { str += item.Product.ToString(); }
         return str;
     }
 
@@ -143,8 +147,26 @@ class Producer
     {
         string str = "Magazine state of producer #" + this.Id.ToString() + ":\n";
         str += "ID   | NAME       | PRICE  | NUMBER | DESCRIPTION          | TAGS                \n";
-        foreach (ProducerItem item in this.Magazine) { str += item.ToString(); }
+        foreach (ProducerItem item in this._Magazine) { str += item.ToString(); }
         return str;
+    }
+
+    protected void RemoveItemFromMagazine(ProducerItem item)
+    {
+        this.RemoveItemFromMagazine(item.Product.Id);
+    }
+
+    protected void RemoveItemFromMagazine(uint id)
+    {
+        this._Magazine.RemoveAll(item => item.Product.Id == id);
+    }
+
+    protected void AddItemToMagazine(ProducerItem item)
+    {
+        if (_Magazine.Any(it => it.Product.Id == item.Product.Id))
+        {
+            throw new InvalidOperationException("Producer cannot have two items with the same id!");
+        }
     }
 
     private void ProductionTimerCallback(Object? source, ElapsedEventArgs e)
@@ -155,7 +177,7 @@ class Producer
 
     private void ProduceGoods()
     {
-        foreach (ProducerItem Item in this.Magazine)
+        foreach (ProducerItem Item in this._Magazine)
         {
             Item.Produce();
         }
@@ -163,7 +185,7 @@ class Producer
 
     private void UpdatePrices()
     {
-        foreach (ProducerItem Item in this.Magazine)
+        foreach (ProducerItem Item in this._Magazine)
         {
             Item.UpdatePrice();
         }
@@ -177,13 +199,13 @@ class Producer
 
     public StockItem? GetItemInfo(uint productId)
     {
-        ProducerItem? item = this.Magazine.FirstOrDefault(it => it.Product.Id == productId);
+        ProducerItem? item = this._Magazine.FirstOrDefault(it => it.Product.Id == productId);
         return item != null ? item.Copy() : null;
     }
 
     public List<StockItem> GetItemList(string? productName = null, uint? minPrice = null, uint? maxPrice = null, List<string>? tags = null)
     {
-        List<ProducerItem> refList = new List<ProducerItem>(this.Magazine);
+        List<ProducerItem> refList = new List<ProducerItem>(this._Magazine);
         if (refList.Any() && productName != null)
         {
             refList.RemoveAll(item => item.Product.Name != productName);
@@ -211,7 +233,7 @@ class Producer
 
     public StockItem? SellProduct(uint productId, uint quantity = 1)
     {
-        ProducerItem? item = this.Magazine.FirstOrDefault(item => item.Product.Id == productId);
+        ProducerItem? item = this._Magazine.FirstOrDefault(item => item.Product.Id == productId);
         if (item == null)
         {
             Console.WriteLine("[WARN] : Producer #{} failed to sell product #{} - this producer those not produce product with this id!", this.Id, productId);
@@ -246,5 +268,5 @@ class Producer
 
     public uint Id { get; }
     private System.Timers.Timer _ProductionTimer;
-    public List<ProducerItem> Magazine { get; }
+    private List<ProducerItem> _Magazine { get; set; }
 }
