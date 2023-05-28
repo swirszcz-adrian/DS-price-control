@@ -232,12 +232,14 @@ class Producer
 
     public async Task RequestAdditionToAddressBook()
     {
-        Console.WriteLine("[WARN] : Function RequestAdditionToAddressBook() has not been implemented yet!");
+        AddressBook.AddProducer(this);
+        Console.WriteLine("[INFO] : Producer #{} has been added to AddressBook", this.Id);
     }
 
     public async Task RequestRemovalFromAddressBook()
     {
-        Console.WriteLine("[WARN] : Function RequestRemovalFromAddressBook() has not been implemented yet!");
+        AddressBook.RemoveProducer(this);
+        Console.WriteLine("[WARN] : Producer #{} has been removed from AddressBook!", this.Id);
     }
 
     public uint Id { get; }
