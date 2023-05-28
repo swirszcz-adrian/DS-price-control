@@ -47,15 +47,16 @@ class Consumer
         PRODUCT_SELECTION, DETAILS_SELECTION, WAITING_FOR_FUNDS
     }
 
-    public Consumer(AddressBook addressBook)
+    public Consumer()
     {
         _Timer = new System.Timers.Timer(1000); // Wywołuje metodę co 1 sekundę (1000 milisekund)
         _Timer.Elapsed += EventManager;
         _Timer.AutoReset = true;
         _Timer.Enabled = true;
+        this._Producers = AddressBook.GetProducers();
+        stage = SaleStage.PRODUCT_SELECTION;
         Console.WriteLine("Koniec konstruktora");
-        //GetCurrentAddressBookAsync();
-        UpdateProductsListAsync();
+        UpdateProductsList();
         Console.ReadKey();
     }
 
@@ -88,15 +89,29 @@ class Consumer
         throw new NotImplementedException();
     }
 
-    private void MakeDecision()
+    private void StageManager()
     {
-        throw new NotImplementedException();
+        switch (stage)
+        {
+            case SaleStage.PRODUCT_SELECTION:
+            {
+                UpdateProductsList();
+                ChooseProductToBuy();
+                break;
+            }
+            case SaleStage.DETAILS_SELECTION:
+            {
+
+                break;
+            }
+            case SaleStage.WAITING_FOR_FUNDS:
+            {
+                break;
+            }
+            default: break;
+        }
     }
 
-    private async Task GetCurrentAddressBookAsync()
-    {
-        throw new NotImplementedException();
-    }
 
     /// <summary>
     /// Asynchronously updates the list of products and stock items available on the market from all the producers.
@@ -106,21 +121,15 @@ class Consumer
     /// The resulting lists of stock items are consolidated into a single list, which is then assigned to the StockOnTheMarket property. 
     /// In addition, each stock item's associated product is added to the ProductOnTheMarket property, which is a list of unique products.
     /// </remarks>
-    private async Task UpdateProductsListAsync()
+    private void UpdateProductsList()
     {
-        List<Task<List<StockItem>>> tasks = new List<Task<List<StockItem>>>();
         List<StockItem> allStockOnTheMarket = new List<StockItem>();
         List<Product> allProductOnTheMarket = new List<Product>();
 
         foreach (Producer producer in _Producers)
         {
-            tasks.Add(producer.GetItemListAsync());
-        }
-
-        foreach (Task<List<StockItem>> task in tasks)
-        {
-            List<StockItem> stockItemsBatch = await task;
-            foreach (StockItem stockItem in stockItemsBatch)
+            List<StockItem> producerStockItemList = producer.GetItemList();
+            foreach (StockItem stockItem in producerStockItemList)
             {
                 allStockOnTheMarket.Add(stockItem);
                 allProductOnTheMarket.Add(stockItem.Product);
@@ -137,10 +146,18 @@ class Consumer
         Console.WriteLine("Added {0} units to account funds (total amount = {1})", amount, this._Money);
     }
 
-    private async Task ChooseProductToBuy()
+    private void ChooseProductToBuy()
     {
-        await UpdateProductsListAsync();
+        Random rnd = new Random();
+        int rndIndex = rnd.Next(ProductOnTheMarket.Count);
+        Product rndProduct = ProductOnTheMarket[rndIndex];
 
+        this.CurrentOrder = new Order(rndProduct.Id);
+    }
+
+    private void FillOrderDetails()
+    {
+        foreach ()
         Random rnd = new Random();
         int rndIndex = rnd.Next(ProductOnTheMarket.Count);
         Product rndProduct = ProductOnTheMarket[rndIndex];
@@ -150,7 +167,7 @@ class Consumer
 
     private void EventManager(Object source, ElapsedEventArgs e)
     {
-        MakeDecision();
+        StageManager();
         Console.WriteLine("Wywołanie metody o godzinie: {0}", e.SignalTime);
         GenerateMoney(10);
     }
@@ -164,4 +181,6 @@ class Consumer
     private List<Producer> _Producers;
 
     private uint _Money = 0;
+
+    private SaleStage stage;
 }
