@@ -21,40 +21,42 @@ class Consumer
         /// </summary>
         /// <param name="productID">The unique ID of the product to be ordered.</param>
         /// <param name="product">The product to be ordered. Defaults to null.</param>
-        /// <param name="amount">The amount of product to be ordered. Defaults to null.</param>
+        /// <param name="quantity">The amount of product to be ordered. Defaults to null.</param>
         /// <param name="preferredUnitPrice">The preferred unit price for the product. Defaults to null.</param>
         /// <param name="potentialSellers">A list of potential sellers for the product. Defaults to null.</param>
-        public Order(uint productId, Product? product = null, uint? amount = null, uint? preferredUnitPrice = null, List<Producer>? potentialSellers = null) 
+        public Order(uint productId, Product? product = null, uint? quantity = null, uint? preferredUnitPrice = null, Dictionary<uint, StockItem>? potentialSellersOffers = null) 
         {
             this.ProductId = productId;
             this.Product = product;
-            this.Amount = amount;
-            this.PreferredUnitPrice = preferredUnitPrice;
-            this.PotentialSellers = potentialSellers;
+            this.Quantity = quantity;
+            this.MaxUnitPrice = preferredUnitPrice;
+            this.PotentialSellersOffers = potentialSellersOffers;
             this.IsRealised = false;
         }
 
         public uint ProductId { get; set; }
         public Product? Product { get; set; }
-        public uint? Amount { get; set; }
-        public uint? PreferredUnitPrice { get; set; }
-        public List<Producer>? PotentialSellers { get; set; }
+        public uint? Quantity { get; set; }
+        public float? MaxUnitPrice { get; set; }
+        public Dictionary<uint, StockItem>? PotentialSellersOffers { get; set; }
         public bool IsRealised { get; set; }
     }
 
     public enum SaleStage
     {
-        PRODUCT_SELECTION, DETAILS_SELECTION, WAITING_FOR_FUNDS
+        PRODUCT_SELECTION, DETAILS_SELECTION, PRODUCER_SEARCHING, WAITING_FOR_FUNDS, DO_NOTHING
     }
 
-    public Consumer()
+    public Consumer(float priceFluctuationFactor = 0.05f, float quantityFluctuationFactor = 0.05f)
     {
         _Timer = new System.Timers.Timer(1000); // Wywołuje metodę co 1 sekundę (1000 milisekund)
         _Timer.Elapsed += EventManager;
         _Timer.AutoReset = true;
         _Timer.Enabled = true;
         this._Producers = AddressBook.GetProducers();
-        stage = SaleStage.PRODUCT_SELECTION;
+        this.PriceFluctuationFactor = priceFluctuationFactor;
+        this.QuantityFluctuationFactor = quantityFluctuationFactor;
+        Stage = SaleStage.PRODUCT_SELECTION;
         Console.WriteLine("Koniec konstruktora");
         UpdateProductsList();
         Console.ReadKey();
@@ -91,7 +93,7 @@ class Consumer
 
     private void StageManager()
     {
-        switch (stage)
+        switch (Stage)
         {
             case SaleStage.PRODUCT_SELECTION:
             {
@@ -101,13 +103,19 @@ class Consumer
             }
             case SaleStage.DETAILS_SELECTION:
             {
-
+                FillOrderDetails();
                 break;
             }
             case SaleStage.WAITING_FOR_FUNDS:
             {
                 break;
             }
+            case SaleStage.DO_NOTHING:
+            {
+                Console.WriteLine("Jejjjjj");
+                break;
+            }
+
             default: break;
         }
     }
@@ -148,11 +156,11 @@ class Consumer
 
     private void ChooseProductToBuy()
     {
-        Random rnd = new Random();
-        int rndIndex = rnd.Next(ProductOnTheMarket.Count);
+        int rndIndex = this.Rng.Next(ProductOnTheMarket.Count);
         Product rndProduct = ProductOnTheMarket[rndIndex];
 
         this.CurrentOrder = new Order(rndProduct.Id);
+        this.Stage = SaleStage.DETAILS_SELECTION;
     }
 
     private void FillOrderDetails()
@@ -175,12 +183,45 @@ class Consumer
         {
             averagePrice /= potentialSellersNum;
             averageQuantity /= potentialSellersNum;
-        }
-        Random rnd = new Random();
-        int rndIndex = rnd.Next(ProductOnTheMarket.Count);
-        Product rndProduct = ProductOnTheMarket[rndIndex];
 
-        this.CurrentOrder = new Order(rndProduct.Id);
+            float maxUnitPrice = (float)(((this.Rng.NextDouble() * 2) - 1.0) * this.PriceFluctuationFactor * averagePrice);
+            uint preferedQuantity = (uint)(this.Rng.Next(-1, 1) * this.QuantityFluctuationFactor * averagePrice);
+
+            this.CurrentOrder.MaxUnitPrice = maxUnitPrice;
+            this.CurrentOrder.Quantity = preferedQuantity;
+            Console.WriteLine("Purchase details have been predetermined.\nMax price for unit = {0}\n Preferred quantity = {1}", maxUnitPrice, preferedQuantity);
+            this.Stage = SaleStage.PRODUCER_SEARCHING;
+        }
+        else
+        {
+            Console.WriteLine("Product was not found.");
+            this.Stage = SaleStage.PRODUCT_SELECTION;
+        }
+    }
+
+    private void GetProductSellers()
+    {
+        Dictionary<uint, StockItem> producersItem = new Dictionary<uint, StockItem>();
+
+        foreach (Producer producer in _Producers)
+        {
+            StockItem? item = producer.GetItemInfo(this.CurrentOrder.ProductId);
+            if (item != null)
+            {
+                producersItem.Add(producer.Id, item);
+            }
+        }
+
+        if (producersItem.Count > 0)
+        {
+            this.CurrentOrder.PotentialSellersOffers = producersItem;
+            Console.WriteLine("{0} producers with productId = {1} was found", producersItem.Count, this.CurrentOrder.ProductId);
+            this.Stage = SaleStage.DO_NOTHING;
+        }
+        else
+        {
+            this.Stage = SaleStage.PRODUCT_SELECTION;
+        }
     }
 
     private void EventManager(Object source, ElapsedEventArgs e)
@@ -200,5 +241,11 @@ class Consumer
 
     private uint _Money = 0;
 
-    private SaleStage stage;
+    private SaleStage Stage;
+
+    private Random Rng = new Random();
+
+    private float PriceFluctuationFactor;
+
+    private float QuantityFluctuationFactor;
 }
