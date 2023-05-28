@@ -110,6 +110,7 @@ class Producer
         this._ProductionTimer.AutoReset = true;
         this._ProductionTimer.Enabled = true;
         this.Magazine = new List<ProducerItem>() { producerItem };
+        this.RequestAdditionToAddressBook();
     }
 
     public Producer(uint id, uint ProductionTimeMS, List<ProducerItem> initialMagazineState)
@@ -120,13 +121,14 @@ class Producer
         this._ProductionTimer.AutoReset = true;
         this._ProductionTimer.Enabled = true;
         this.Magazine = initialMagazineState;
+        this.RequestAdditionToAddressBook();
     }
 
     ~Producer()
     {
         this._ProductionTimer.Stop();
         this._ProductionTimer.Dispose();
-        _ = this.RequestRemovalFromAddressBook();
+        this.RequestRemovalFromAddressBook();
     }
 
     public override string ToString()
@@ -230,13 +232,13 @@ class Producer
     }
 
 
-    public async Task RequestAdditionToAddressBook()
+    public void RequestAdditionToAddressBook()
     {
         AddressBook.AddProducer(this);
         Console.WriteLine("[INFO] : Producer #{} has been added to AddressBook", this.Id);
     }
 
-    public async Task RequestRemovalFromAddressBook()
+    public void RequestRemovalFromAddressBook()
     {
         AddressBook.RemoveProducer(this);
         Console.WriteLine("[WARN] : Producer #{} has been removed from AddressBook!", this.Id);
