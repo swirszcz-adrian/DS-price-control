@@ -45,15 +45,18 @@ class PriceControl
                 new Producer.ProducerItem(prd3, 20, 130)
                 }
             );
-        for (int i = 0; i < 20; i++)
+        Consumer janusz = new Consumer(1);
+
+/*        for (int i = 0; i < 20; i++)
         {
             Console.WriteLine(producer.ToFullString());
             Thread.Sleep(2000);
-        }
-        
+        }*/
+        Console.ReadLine();
 
-/*        AddressBook ad = new AddressBook();
 
-        Consumer c1 = new Consumer(ad);*/
+        /*        AddressBook ad = new AddressBook();
+
+                Consumer c1 = new Consumer(ad);*/
     }
 }

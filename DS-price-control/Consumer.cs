@@ -47,8 +47,9 @@ class Consumer
         PRODUCT_SELECTION, DETAILS_SELECTION, PRODUCER_SEARCHING, WAITING_FOR_FUNDS, DO_NOTHING
     }
 
-    public Consumer(float priceFluctuationFactor = 0.05f, float quantityFluctuationFactor = 0.05f)
+    public Consumer(uint id, float priceFluctuationFactor = 0.05f, float quantityFluctuationFactor = 0.05f)
     {
+        this.Id = id;
         _Timer = new System.Timers.Timer(1000); // Wywołuje metodę co 1 sekundę (1000 milisekund)
         _Timer.Elapsed += EventManager;
         _Timer.AutoReset = true;
@@ -58,8 +59,6 @@ class Consumer
         this.QuantityFluctuationFactor = quantityFluctuationFactor;
         Stage = SaleStage.PRODUCT_SELECTION;
         Console.WriteLine("Koniec konstruktora");
-        UpdateProductsList();
-        Console.ReadKey();
     }
 
     public async Task RequestGoodsInfoAsync()
@@ -110,6 +109,11 @@ class Consumer
             {
                 break;
             }
+            case SaleStage.PRODUCER_SEARCHING:
+            {
+                GetProductSellers();
+                break;
+            }
             case SaleStage.DO_NOTHING:
             {
                 Console.WriteLine("Jejjjjj");
@@ -146,12 +150,14 @@ class Consumer
 
         this.StockOnTheMarket = allStockOnTheMarket;
         this.ProductOnTheMarket = new HashSet<Product>(allProductOnTheMarket).ToList();
+
+        Console.WriteLine("[INFO] : Consumer #{0} updated products and stock items database.", this.Id);
     }
 
     private void GenerateMoney(uint amount)
     {
         this._Money += amount;
-        Console.WriteLine("Added {0} units to account funds (total amount = {1})", amount, this._Money);
+        Console.WriteLine("[INFO] : Consumer #{0} added {1} money units to account (total amount = {2}).", this.Id, amount, this._Money);
     }
 
     private void ChooseProductToBuy()
@@ -184,8 +190,9 @@ class Consumer
             averagePrice /= potentialSellersNum;
             averageQuantity /= potentialSellersNum;
 
-            float maxUnitPrice = (float)(((this.Rng.NextDouble() * 2) - 1.0) * this.PriceFluctuationFactor * averagePrice);
-            uint preferedQuantity = (uint)(this.Rng.Next(-1, 1) * this.QuantityFluctuationFactor * averagePrice);
+            Console.WriteLine((this.Rng.NextDouble() * 2) - 1.0);
+            float maxUnitPrice = averagePrice + (float)(((this.Rng.NextDouble() * 2) - 1.0) * this.PriceFluctuationFactor * averagePrice);
+            uint preferedQuantity = (uint)this.Rng.Next(1, this.Rng.Next((int)((1 - this.QuantityFluctuationFactor) * averageQuantity), (int)((1 + this.QuantityFluctuationFactor) * averageQuantity)));
 
             this.CurrentOrder.MaxUnitPrice = maxUnitPrice;
             this.CurrentOrder.Quantity = preferedQuantity;
@@ -226,11 +233,12 @@ class Consumer
 
     private void EventManager(Object source, ElapsedEventArgs e)
     {
-        StageManager();
         Console.WriteLine("Wywołanie metody o godzinie: {0}", e.SignalTime);
+        StageManager();
         GenerateMoney(10);
     }
 
+    public uint Id { get; }
     public List<Product> ProductOnTheMarket { get; set; }
     public List<StockItem> StockOnTheMarket { get; set; }
     private Order CurrentOrder;

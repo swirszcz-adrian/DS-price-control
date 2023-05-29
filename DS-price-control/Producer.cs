@@ -167,6 +167,7 @@ class Producer
         {
             throw new InvalidOperationException("Producer cannot have two items with the same id!");
         }
+        this._Magazine.Add(item);
     }
 
     private void ProductionTimerCallback(Object? source, ElapsedEventArgs e)
@@ -236,18 +237,18 @@ class Producer
         ProducerItem? item = this._Magazine.FirstOrDefault(item => item.Product.Id == productId);
         if (item == null)
         {
-            Console.WriteLine("[WARN] : Producer #{} failed to sell product #{} - this producer those not produce product with this id!", this.Id, productId);
+            Console.WriteLine("[WARN] : Producer #{0} failed to sell product #{1} - this producer those not produce product with this id!", this.Id, productId);
             return null;
         }
         else if (item.Quantity < quantity) 
         {
-            Console.WriteLine("[INFO] : Producer #{} failed to sell {} units of product product #{} - only {} are left in the storage!", this.Id, quantity, productId, item.Quantity);
+            Console.WriteLine("[INFO] : Producer #{0} failed to sell {1} units of product product #{2} - only {3} are left in the storage!", this.Id, quantity, productId, item.Quantity);
             return null;
         }
         else
         {
             item.Quantity -= quantity;
-            Console.WriteLine("[INFO] : Producer #{} sold {} units of product #{} - {} remaining.", this.Id, quantity, productId, item.Quantity);
+            Console.WriteLine("[INFO] : Producer #{0} sold {1} units of product #{2} - {3} remaining.", this.Id, quantity, productId, item.Quantity);
             return new StockItem(item.Product, item.Price, item.Quantity);
             
         }
@@ -257,13 +258,13 @@ class Producer
     public void RequestAdditionToAddressBook()
     {
         AddressBook.AddProducer(this);
-        Console.WriteLine("[INFO] : Producer #{} has been added to AddressBook", this.Id);
+        Console.WriteLine("[INFO] : Producer #{0} has been added to AddressBook", this.Id);
     }
 
     public void RequestRemovalFromAddressBook()
     {
         AddressBook.RemoveProducer(this);
-        Console.WriteLine("[WARN] : Producer #{} has been removed from AddressBook!", this.Id);
+        Console.WriteLine("[WARN] : Producer #{0} has been removed from AddressBook!", this.Id);
     }
 
     public uint Id { get; }
