@@ -68,7 +68,6 @@ class Consumer
     {
         Console.WriteLine("\n - - - - - - - - - - Consumer #{0} turn start (t = {1}) - - - - - - - - - -", this.Id, e.SignalTime);
         StageManager();
-        GenerateMoney(10);
         Console.WriteLine(" - - - - - - - - - - - - - - - - - - - - Turn end - - - - - - - - - - - - - - - - - - - -\n");
     }
 
@@ -130,6 +129,7 @@ class Consumer
             Console.WriteLine("[INFO] : Consumer #{0} obtained the product.", this.Id);
             this._Money -= (float)this.CurrentOrder.Quantity.Value * purchasedItem.Price;
             this.Stage = SaleStage.PRODUCT_SELECTION;
+            
         }
         else
         {
@@ -165,12 +165,6 @@ class Consumer
         this.ProductOnTheMarket = new HashSet<Product>(allProductOnTheMarket).ToList();
 
         Console.WriteLine("[INFO] : Consumer #{0} updated products and stock items database.", this.Id);
-    }
-
-    private void GenerateMoney(uint amount)
-    {
-        this._Money += amount;
-        Console.WriteLine("[INFO] : Consumer #{0} added {1} money units to account (total amount = {2}).", this.Id, amount, this._Money);
     }
 
     private void ChooseProductToBuy()
@@ -350,7 +344,7 @@ class Consumer
 
     private List<Producer> _Producers;
 
-    private float _Money = 0;
+    private float _Money = float.MaxValue;
 
     private SaleStage Stage;
 
