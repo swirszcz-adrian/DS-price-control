@@ -35,23 +35,41 @@ class PriceControl
 
         // Czekanie na zakończenie wszystkich zadań
         await Task.WhenAll(producerTasks.Concat(new[] { consumerTask }));*/
-        Product prd = new Product(0, "012345678901234567890123456789", "xvxcvcxvxcvcxcvxcvxcvcxvxcvxcvcxvcxvxvxcvxcvcxvxcvxcvxcvxcvcxvcxvxcvxcvxcvcxvxc");
-        Product prd2 = new Product(1, "0123", "xvcvxc");
-        Product prd3 = new Product(2, "012345678901234567890123456789", "xvxcvcxvxcvcxcvxcvxcvcxvxcvxcvcxvcxvxvxcvxcvcxvxcvxcvxcvxcvcxvcxvxcvxcvxcvcxvxc");
-        Producer producer = new Producer(2, 500,
+        Product prd1 = new Product(0, "Mydło", "Szare i pachnące.");
+        Product prd2 = new Product(1, "Powidła", "Pyszne powidła jak u babci.");
+        Product prd3 = new Product(2, "Scyzoryk", "Wiele funkcji.");
+        Product prd4 = new Product(3, "Garnek", "Nie wrzucać do ognia!");
+
+        Producer producer1 = new Producer(0, 500,
             new List<Producer.ProducerItem> () {
-                new Producer.ProducerItem(prd, 20, 100),
-                new Producer.ProducerItem(prd2, 20, 200),
-                new Producer.ProducerItem(prd3, 20, 130)
+                new Producer.ProducerItem(prd1, 22, 100),
+                new Producer.ProducerItem(prd2, 50, 50),
+                new Producer.ProducerItem(prd3, 34, 130)
                 }
             );
-        Consumer janusz = new Consumer(1);
+        Producer producer2 = new Producer(1, 600,
+            new List<Producer.ProducerItem>() {
+                new Producer.ProducerItem(prd1, 19, 200),
+                new Producer.ProducerItem(prd2, 20, 200),
+                new Producer.ProducerItem(prd4, 80, 20)
+                }
+            );
+        Producer producer3 = new Producer(2, 400,
+            new List<Producer.ProducerItem>() {
+                new Producer.ProducerItem(prd3, 40, 190),
+                new Producer.ProducerItem(prd4, 78, 30)
+                }
+            );
 
-/*        for (int i = 0; i < 20; i++)
-        {
-            Console.WriteLine(producer.ToFullString());
-            Thread.Sleep(2000);
-        }*/
+        Consumer janusz1 = new Consumer(0);
+        //Thread.Sleep(500);
+        Consumer janusz2 = new Consumer(1);
+
+        /*        for (int i = 0; i < 20; i++)
+                {
+                    Console.WriteLine(producer.ToFullString());
+                    Thread.Sleep(2000);
+                }*/
         Console.ReadLine();
 
 
