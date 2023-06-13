@@ -403,12 +403,12 @@ class Consumer
         {
             LogToFile("There wasnt any producers with offers meeting the requirements.");
             // Debug (do usunięcia)
-            foreach (KeyValuePair<uint, StockItem> entry in CurrentOrder.PotentialSellersOffers)
+/*            foreach (KeyValuePair<uint, StockItem> entry in CurrentOrder.PotentialSellersOffers)
             {
                 float dealerPrice = entry.Value.Price;
                 uint dealerQuantity = entry.Value.Quantity;
                 Console.WriteLine($"price = {dealerPrice}, quant = {dealerQuantity}");
-            }
+            }*/
             ChangeStage(SaleStage.PRODUCT_SELECTION);
         }
     }
@@ -520,8 +520,6 @@ class Consumer
         using (StreamWriter w = File.AppendText($"../../../logs/consumer{this.Id}.txt"))
         {
             LogCounter++;
-            DateTime date_time = DateTime.Now;
-            int ms = date_time.Millisecond;
             string stringTime = DateTime.Now.ToString($"HH:mm:ss.ffffff");
             w.Write($"\n{LogCounter} | {stringTime} | {logMessage}");
         }
