@@ -74,17 +74,12 @@ class Consumer
         this._ConsumerActionTimer.AutoReset = true;
         this._ConsumerActionTimer.Enabled = true;
 
-        Console.WriteLine("\n[INFO] : Consumer #{0} entered the market!\n", this.Id);
         LogToFile("Consumer has entered the market!");
     }
 
     private void EventManager(System.Object source, ElapsedEventArgs e)
     {
-        Console.WriteLine("\n - - - - - - - - - - Consumer #{0} turn start (t = {1}) - - - - - - - - - -", this.Id, e.SignalTime);
         StageManager();
-        Console.WriteLine(" - - - - - - - - - - - - - - - - - - - - Turn end - - - - - - - - - - - - - - - - - - - -\n");
-        LogToFile("Test");
-        // TODO: Wywalić znacziki początka i końca tury 
     }
 
     private void StageManager()
@@ -152,7 +147,7 @@ class Consumer
 
         if (purchasedStockItem != null)
         {
-            Console.WriteLine("[INFO] : Consumer #{0} obtained the product.", this.Id);
+            LogToFile("Consumer obtained the product.");
             _Money -= (float)(CurrentOrder.Quantity ?? 0) * purchasedStockItem.Price;
             ChangeStage(SaleStage.PRODUCT_SELECTION);
             StageInfo.purchaseStageRetriesNum = 0;
@@ -161,7 +156,7 @@ class Consumer
         }
         else
         {
-            Console.WriteLine("[INFO] : Consumer #{0} did not receive the product.", this.Id);
+            LogToFile("Consumer did not receive the product.");
             ChangeStage(SaleStage.PRODUCT_SELECTION);
             StageInfo.purchaseStageRetriesNum = 0;
             StageInfo.InnerStageWaitActive = false;
@@ -200,7 +195,7 @@ class Consumer
         StockOnTheMarket = allStockOnTheMarket;
         ProductOnTheMarket = new HashSet<Product>(allProductOnTheMarket).ToList();
 
-        Console.WriteLine("[INFO] : Consumer #{0} updated products and stock items database.", this.Id);
+        LogToFile("Consumer updated products and stock items database.");
     }
 
     /// <summary>
@@ -215,7 +210,7 @@ class Consumer
         int rndIndex = _Rng.Next(ProductOnTheMarket.Count);
         Product rndProduct = ProductOnTheMarket[rndIndex];
         CurrentOrder = new Order(rndProduct.Id);
-        Console.WriteLine("[INFO] : Product #{0} ('{1}') has been selected for purchase.", rndProduct.Id, rndProduct.Name);
+        LogToFile($"Product #{rndProduct.Id} ('{rndProduct.Name}') has been selected for purchase.");
         ChangeStage(SaleStage.DETAILS_SELECTION);
     }
 
@@ -258,7 +253,7 @@ class Consumer
 
             if (averageQuantity == 0) 
             {
-                Console.WriteLine("[INFO] : Product #{0} average amount is 0. New product selection...", CurrentOrder.ProductId);
+                LogToFile($"Product #{CurrentOrder.ProductId} average amount is 0. New product selection...");
                 ChangeStage(SaleStage.PRODUCT_SELECTION);
                 return;
             }
@@ -269,13 +264,13 @@ class Consumer
 
             CurrentOrder.MaxUnitPrice = maxUnitPrice;
             CurrentOrder.Quantity = preferedQuantity;
-            Console.WriteLine("[INFO] : Purchase details have been predetermined (max price for unit = {0}, preferred quantity = {1})", maxUnitPrice, preferedQuantity);
+            LogToFile($"Purchase details have been predetermined (max price for unit = {maxUnitPrice}, preferred quantity = {preferedQuantity})");
             ChangeStage(SaleStage.BEST_DEALER_SEARCHING);
         }
         else
         {
             ChangeStage(SaleStage.PRODUCT_SELECTION);
-            Console.WriteLine("[INFO] : Product #{0} was not found in the producers stock. New product selection...", CurrentOrder.ProductId);
+            LogToFile($"Product #{CurrentOrder.ProductId} was not found in the producers stock. New product selection...");
         }
     }
 
@@ -307,12 +302,12 @@ class Consumer
         if (producersItem.Count > 0)
         {
             CurrentOrder.PotentialSellersOffers = producersItem;
-            Console.WriteLine("[INFO] : {0} producers found with wanted product #{1}.", producersItem.Count, CurrentOrder.ProductId);
+            LogToFile($"{producersItem.Count} producers found with wanted product #{CurrentOrder.ProductId}.");
         }
         else
         {
             ChangeStage(SaleStage.PRODUCT_SELECTION);
-            Console.WriteLine("[INFO] : No producers found with wanted product #{1}.", CurrentOrder.ProductId);
+            LogToFile($"No producers found with wanted product #{CurrentOrder.ProductId}.");
         }
     }
 
@@ -350,6 +345,7 @@ class Consumer
         {
             float dealerPrice = entry.Value.Price;
             uint dealerQuantity = entry.Value.Quantity;
+            orderQuantity = orderQuantity == 0 ? 1 : orderQuantity;
 
             if (dealerPrice < orderMaxPrice && dealerQuantity > orderQuantity)
             {
@@ -366,6 +362,7 @@ class Consumer
                 uint dealerQuantity = entry.Value.Quantity;
                 orderMaxPrice = 1.05f * orderMaxPrice;
                 orderQuantity = (uint)(0.9 * orderQuantity);
+                orderQuantity = orderQuantity == 0 ? 1 : orderQuantity;
 
                 if (dealerPrice < orderMaxPrice && dealerQuantity > orderQuantity)
                 {
@@ -378,7 +375,7 @@ class Consumer
             {
                 CurrentOrder.MaxUnitPrice = orderMaxPrice;
                 CurrentOrder.Quantity = orderQuantity;
-                Console.WriteLine("The price and quantity of the order has been changed due to lack of perfect offers");
+                LogToFile("The price and quantity of the order has been changed due to lack of perfect offers.");
             }
         }
 
@@ -398,13 +395,14 @@ class Consumer
                 }
             }
 
-            Console.WriteLine("[INFO] : Consumer #{0} has chosen producer #{1} to fulfill an order.", this.Id, bestSellerId);
+            LogToFile($"Consumer has chosen producer #{bestSellerId} to fulfill an order.");
             CurrentOrder.BestDealerId = bestSellerId;
             ChangeStage(SaleStage.BEST_DEALER_CONTACT);
         }
         else
         {
-            Console.WriteLine("[WARN] : There wasnt any producers with offers meeting the requirements.");
+            LogToFile("There wasnt any producers with offers meeting the requirements.");
+            // Debug (do usunięcia)
             foreach (KeyValuePair<uint, StockItem> entry in CurrentOrder.PotentialSellersOffers)
             {
                 float dealerPrice = entry.Value.Price;
@@ -426,8 +424,7 @@ class Consumer
 
         if (prodItem.Quantity < CurrentOrder.Quantity) 
         {
-            Console.WriteLine("[INFO] : Producer #{0} does not have the required quantity of the product (required = {1}, current = {2}).\nStarted waiting for delivery.",
-                bestProducerId, this.CurrentOrder.Quantity, prodItem.Quantity);
+            LogToFile($"Producer #{bestProducerId} does not have the required quantity of the product (required = {CurrentOrder.Quantity}, current = {prodItem.Quantity}).Started waiting for delivery.");
 
             if (StageInfo.InnerStageWaitCompleted && StageInfo.purchaseStageRetriesNum < 1)
             {
@@ -442,7 +439,7 @@ class Consumer
         }
         else if (prodItem.Price > CurrentOrder.MaxUnitPrice)
         {
-            Console.WriteLine("[INFO] : Price of the product {0} is too high (max acceptable = {1}, current = {2})", prodItem.Product.Id, CurrentOrder.MaxUnitPrice, prodItem.Price);
+            LogToFile($"Price of the product {prodItem.Product.Id} is too high (max acceptable = {CurrentOrder.MaxUnitPrice}, current = {prodItem.Price})");
             if (StageInfo.InnerStageWaitCompleted && StageInfo.purchaseStageRetriesNum < 1)
             {
                 ChangeStage(SaleStage.BEST_DEALER_SEARCHING);
@@ -456,8 +453,7 @@ class Consumer
         }
         else
         {
-            Console.WriteLine("[INFO] : Consumer #{0} is ready to buy {1} units of product #{2} from the producer #{3}.",
-                this.Id, CurrentOrder.Quantity, prodItem.Product.Id, bestProducerId);
+            LogToFile($"Consumer is ready to buy {CurrentOrder.Quantity} units of product #{prodItem.Product.Id} from the producer #{bestProducerId}.");
             BuyGoods();
         }
     }
@@ -471,7 +467,7 @@ class Consumer
         {
             StageInfo.TurnsToWait--;
         }
-        Console.WriteLine("[INFO] : Waiting... Turns left = {0}.", StageInfo.TurnsToWait);
+        LogToFile($"Waiting... Turns left = {StageInfo.TurnsToWait}.");
     }
 
     /// <summary>
@@ -490,13 +486,13 @@ class Consumer
             StageInfo.NextStage = nextMainStage;
             StageInfo.TurnsToWait = (uint)_Rng.Next((int)minTurnsToWait, (int)maxTurnsToWait + 1);
             StageInfo.InnerStageWaitActive = innerStageWait;
-            Console.WriteLine("[INFO] : Consumer will transiti to stage {0} after {1} waiting turns.", StageInfo.NextStage, StageInfo.TurnsToWait);
+            LogToFile($"Consumer will transiti to stage {StageInfo.NextStage} after {StageInfo.TurnsToWait} waiting turns.");
         }
         else
         {
             StageInfo.CurrentStage = nextMainStage;
             StageInfo.NextStage = SaleStage.UNKNOWN;
-            Console.WriteLine("[INFO] : Consumer has changed the stage to {0} without waiting.", StageInfo.CurrentStage);
+            LogToFile($"Consumer has changed the stage to {StageInfo.CurrentStage} without waiting.");
         }
     }
 
@@ -515,7 +511,7 @@ class Consumer
             StageInfo.InnerStageWaitActive = false;
             StageInfo.CurrentStage = StageInfo.NextStage;
             StageInfo.NextStage = SaleStage.UNKNOWN;
-            Console.WriteLine("[INFO] : Consumer changed the current stage to {0} automatically after waiting.", StageInfo.CurrentStage);
+            LogToFile($"Consumer changed the current stage to {StageInfo.CurrentStage} automatically after waiting.");
         }
     }
 
