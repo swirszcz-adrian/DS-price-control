@@ -517,13 +517,13 @@ class Consumer
 
     private void LogToFile(string logMessage)
     {
-        using (StreamWriter w = File.AppendText($"../../../log/consumer{this.Id}.txt"))
+        using (StreamWriter w = File.AppendText($"../../../logs/consumer{this.Id}.txt"))
         {
             LogCounter++;
             DateTime date_time = DateTime.Now;
             int ms = date_time.Millisecond;
-            string stringTime = DateTime.Now.ToString($"HH:mm:ss:{ms.ToString()}");
-            w.Write($"\n{LogCounter} : [{stringTime}] : {logMessage}");
+            string stringTime = DateTime.Now.ToString($"HH:mm:ss.ffffff");
+            w.Write($"\n{LogCounter} | {stringTime} | {logMessage}");
         }
     }
 
