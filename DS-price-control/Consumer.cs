@@ -39,14 +39,14 @@ class Consumer
         public bool IsRealised { get; set; }
     }
 
-    public static class StageInfo
+    public class StageInformation
     {
-        public static SaleStage CurrentStage;
-        public static SaleStage NextStage;
-        public static uint purchaseStageRetriesNum;
-        public static uint TurnsToWait;
-        public static bool InnerStageWaitActive;
-        public static bool InnerStageWaitCompleted;
+        public SaleStage CurrentStage;
+        public SaleStage NextStage;
+        public uint purchaseStageRetriesNum;
+        public uint TurnsToWait;
+        public bool InnerStageWaitActive;
+        public bool InnerStageWaitCompleted;
     }
 
     public enum SaleStage
@@ -60,6 +60,7 @@ class Consumer
         this._Producers = AddressBook.GetProducers();
         this._PriceFluctuationFactor = priceFluctuationFactor;
         this._QuantityFluctuationFactor = quantityFluctuationFactor;
+        this.LogCounter = 0;
 
         StageInfo.CurrentStage = SaleStage.PRODUCT_SELECTION;
         StageInfo.NextStage = SaleStage.UNKNOWN;
@@ -74,13 +75,15 @@ class Consumer
         this._ConsumerActionTimer.Enabled = true;
 
         Console.WriteLine("\n[INFO] : Consumer #{0} entered the market!\n", this.Id);
+        LogToFile("Consumer has entered the market!");
     }
 
     private void EventManager(System.Object source, ElapsedEventArgs e)
     {
-        //Console.WriteLine("\n - - - - - - - - - - Consumer #{0} turn start (t = {1}) - - - - - - - - - -", this.Id, e.SignalTime);
+        Console.WriteLine("\n - - - - - - - - - - Consumer #{0} turn start (t = {1}) - - - - - - - - - -", this.Id, e.SignalTime);
         StageManager();
-        //Console.WriteLine(" - - - - - - - - - - - - - - - - - - - - Turn end - - - - - - - - - - - - - - - - - - - -\n");
+        Console.WriteLine(" - - - - - - - - - - - - - - - - - - - - Turn end - - - - - - - - - - - - - - - - - - - -\n");
+        LogToFile("Test");
         // TODO: Wywalić znacziki początka i końca tury 
     }
 
@@ -516,14 +519,28 @@ class Consumer
         }
     }
 
+    private void LogToFile(string logMessage)
+    {
+        using (StreamWriter w = File.AppendText($"../../../log/consumer{this.Id}.txt"))
+        {
+            LogCounter++;
+            DateTime date_time = DateTime.Now;
+            int ms = date_time.Millisecond;
+            string stringTime = DateTime.Now.ToString($"HH:mm:ss:{ms.ToString()}");
+            w.Write($"\n{LogCounter} : [{stringTime}] : {logMessage}");
+        }
+    }
 
     public uint Id { get; }
     public List<Product> ProductOnTheMarket { get; set; } = new List<Product>();
     public List<StockItem> StockOnTheMarket { get; set; } = new List<StockItem>();
 
     public Order CurrentOrder { get; set; }
+    public StageInformation StageInfo = new StageInformation();
 
     private System.Timers.Timer _ConsumerActionTimer;
+
+    private UInt64 LogCounter;
 
     private List<Producer> _Producers;
 

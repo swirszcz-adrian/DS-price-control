@@ -62,7 +62,7 @@ class PriceControl
             );
 
         Consumer janusz1 = new Consumer(0);
-        //Thread.Sleep(500);
+        Thread.Sleep(500);
         Consumer janusz2 = new Consumer(1);
 
         /*        for (int i = 0; i < 20; i++)
