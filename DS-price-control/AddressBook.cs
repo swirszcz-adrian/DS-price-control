@@ -29,6 +29,4 @@ static class AddressBook
     {
         AddressBook._Producers.Remove(producer);
     }
-
-    
 }

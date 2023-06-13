@@ -5,7 +5,7 @@ struct Product
     public Product(uint id, string name, string description = "", List<string>? tags = null)
     {
         this.Id = id;
-        this.Name = name;
+        this.Name = name.Replace(',', '.').Replace('\n', ' ');
         this.Description = description;
         this.Tags = tags ?? new List<string>();
         for (int i = 0; i < this.Tags.Count; i++)

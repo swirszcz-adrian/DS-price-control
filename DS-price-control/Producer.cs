@@ -75,6 +75,11 @@ class Producer
             return str;
         }
 
+        public string ToCsv(string timestamp)
+        {
+            return $"{timestamp},{this.Product.Id},{this.Product.Name},{this.Price:0.00},{this.BasePrice:0.00},{this.Quantity},{this.MaxStorageSpace}";
+        }
+
         public void Produce()
         {
             if (this.Quantity < this.MaxStorageSpace)
@@ -111,6 +116,10 @@ class Producer
         this._ProductionTimer.Enabled = true;
         this._Magazine = new List<ProducerItem>() { producerItem };
         this.RequestAdditionToAddressBook();
+        using (StreamWriter w = File.CreateText($"../../../logs/producer{this.Id}.csv"))
+        {
+            w.WriteLine("timestamp,product_id,product_name,current_price,base_price,curent_quantity,max_quantity");
+        }
     }
 
     public Producer(uint id, uint ProductionTimeMS, List<ProducerItem> initialMagazineState)
@@ -126,6 +135,10 @@ class Producer
             this.AddItemToMagazine(item);
         }
         this.RequestAdditionToAddressBook();
+        using (StreamWriter w = File.CreateText($"../../../logs/producer{this.Id}.csv"))
+        {
+            w.WriteLine("timestamp,product_id,product_name,current_price,base_price,curent_quantity,max_quantity");
+        }
     }
 
     ~Producer()
@@ -174,6 +187,7 @@ class Producer
     {
         this.ProduceGoods();
         this.UpdatePrices();
+        this.LogStatus(e);
     }
 
     private void ProduceGoods()
@@ -190,6 +204,19 @@ class Producer
         {
             Item.UpdatePrice();
         }
+    }
+
+    private void LogStatus(ElapsedEventArgs e)
+    {
+        string timestamp = e.SignalTime.ToString("HH:mm:ss.ffffff");
+        using (StreamWriter w = File.AppendText($"../../../logs/producer{this.Id}.csv"))
+        {
+            foreach (ProducerItem Item in this._Magazine)
+            {
+                w.WriteLine(Item.ToCsv(timestamp));
+            }
+        }
+
     }
 
 
@@ -235,20 +262,21 @@ class Producer
     public StockItem? SellProduct(uint productId, uint quantity = 1)
     {
         ProducerItem? item = this._Magazine.FirstOrDefault(item => item.Product.Id == productId);
+        string timeStamp = DateTime.Now.ToString("HH:mm:ss.ffffff");
         if (item == null)
         {
-            Console.WriteLine("[WARN] : Producer #{0} failed to sell product #{1} - this producer those not produce product with this id!", this.Id, productId);
+            Console.WriteLine($"{timeStamp} | Producer #{this.Id} failed to sell product #{productId} -> this producer does not produce product with this id!");
             return null;
         }
         else if (item.Quantity < quantity) 
         {
-            Console.WriteLine("[INFO] : Producer #{0} failed to sell {1} units of product product #{2} - only {3} are left in the storage!", this.Id, quantity, productId, item.Quantity);
+            Console.WriteLine($"{timeStamp} | Producer #{this.Id} failed to sell {quantity} unit(s) of product #{productId} -> only {item.Quantity} left in the storage!");
             return null;
         }
         else
         {
             item.Quantity -= quantity;
-            Console.WriteLine("[INFO] : Producer #{0} sold {1} units of product #{2} - {3} remaining.", this.Id, quantity, productId, item.Quantity);
+            Console.WriteLine($"{timeStamp} | Producer #{this.Id} sold {quantity} unit(s) of product #{productId} for {item.Price:0.00}$ per unit -> {item.Quantity}/{item.MaxStorageSpace} remaining.");
             return new StockItem(item.Product, item.Price, item.Quantity);
             
         }
@@ -258,13 +286,15 @@ class Producer
     public void RequestAdditionToAddressBook()
     {
         AddressBook.AddProducer(this);
-        Console.WriteLine("[INFO] : Producer #{0} has been added to AddressBook", this.Id);
+        string timeStamp = DateTime.Now.ToString("HH:mm:ss.ffffff");
+        Console.WriteLine($"{timeStamp} | Producer #{this.Id} has been added to AddressBook");
     }
 
     public void RequestRemovalFromAddressBook()
     {
         AddressBook.RemoveProducer(this);
-        Console.WriteLine("[WARN] : Producer #{0} has been removed from AddressBook!", this.Id);
+        string timeStamp = DateTime.Now.ToString("HH:mm:ss.ffffff");
+        Console.WriteLine($"{timeStamp} | Producer #{this.Id} has been removed from AddressBook");
     }
 
     public uint Id { get; }

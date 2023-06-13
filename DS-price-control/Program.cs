@@ -64,17 +64,19 @@ class PriceControl
         Consumer janusz1 = new Consumer(0);
         Thread.Sleep(500);
         Consumer janusz2 = new Consumer(1);
+        Console.ReadLine();
 
         /*        for (int i = 0; i < 20; i++)
                 {
                     Console.WriteLine(producer.ToFullString());
                     Thread.Sleep(2000);
                 }*/
-        Console.ReadLine();
+
 
 
         /*        AddressBook ad = new AddressBook();
 
                 Consumer c1 = new Consumer(ad);*/
+
     }
 }
