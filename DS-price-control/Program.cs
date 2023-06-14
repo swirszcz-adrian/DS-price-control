@@ -9,9 +9,13 @@ namespace PriceControl;
 
 class PriceControl
 {
-    static async Task Main()
+    static void Main()
     {
-        // Tworzenie producentów
+        // To make sure logs can be written somewhere
+        System.IO.Directory.CreateDirectory("../../../logs");
+        Console.WriteLine($"{DateTime.Now.ToString("HH:mm:ss.ffffff")} | Simulation started, press ENTER to end");
+
+        /*// Tworzenie producentów
         ConcurrentBag<Producer> producers = new ConcurrentBag<Producer>()
         {
             new Producer(1, 100, 10),
@@ -34,6 +38,51 @@ class PriceControl
         var consumerTask = consumer.BuyGoodsAsync(100);
 
         // Czekanie na zakończenie wszystkich zadań
-        await Task.WhenAll(producerTasks.Concat(new[] { consumerTask }));
+        await Task.WhenAll(producerTasks.Concat(new[] { consumerTask }));*/
+        Product prd1 = new Product(0, "Mydło", "Szare i pachnące.");
+        Product prd2 = new Product(1, "Powidła", "Pyszne powidła jak u babci.");
+        Product prd3 = new Product(2, "Scyzoryk", "Wiele funkcji.");
+        Product prd4 = new Product(3, "Garnek", "Nie wrzucać do ognia!");
+
+        Producer producer1 = new Producer(0, 500,
+            new List<Producer.ProducerItem> () {
+                new Producer.ProducerItem(prd1, 22, 100),
+                new Producer.ProducerItem(prd2, 50, 50),
+                new Producer.ProducerItem(prd3, 34, 130)
+                }
+            );
+        Producer producer2 = new Producer(1, 600,
+            new List<Producer.ProducerItem>() {
+                new Producer.ProducerItem(prd1, 19, 200),
+                new Producer.ProducerItem(prd2, 20, 200),
+                new Producer.ProducerItem(prd4, 80, 20)
+                }
+            );
+        Producer producer3 = new Producer(2, 400,
+            new List<Producer.ProducerItem>() {
+                new Producer.ProducerItem(prd3, 40, 190),
+                new Producer.ProducerItem(prd4, 78, 30)
+                }
+            );
+
+        Consumer janusz1 = new Consumer(0);
+        Thread.Sleep(200);
+        Consumer janusz2 = new Consumer(1);
+        Thread.Sleep(200);
+        Consumer janusz3 = new Consumer(2);
+        Console.ReadLine();
+
+        /*        for (int i = 0; i < 20; i++)
+                {
+                    Console.WriteLine(producer.ToFullString());
+                    Thread.Sleep(2000);
+                }*/
+
+
+
+        /*        AddressBook ad = new AddressBook();
+
+                Consumer c1 = new Consumer(ad);*/
+
     }
 }
