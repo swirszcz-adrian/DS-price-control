@@ -29,7 +29,44 @@ class StockItem
                                                                         // therefore it's copied by value
     }
 
+    private readonly object _PriceLock = new object();
+    private readonly object _QuantityLock = new object();
+
     public Product Product { get; }
-    public float Price { get; set; }
-    public uint Quantity { get; set; }
+    public float Price 
+    { 
+        get 
+        {
+            lock (_PriceLock)
+            {
+                return this._Price;
+            }
+        } 
+        set 
+        {
+            lock (_PriceLock)
+            {
+                this._Price = value;
+            }
+        } 
+    }
+    private float _Price;
+    public uint Quantity
+    {
+        get
+        {
+            lock (_QuantityLock)
+            {
+                return this._Quantity;
+            }
+        }
+        set
+        {
+            lock (_QuantityLock)
+            {
+                this._Quantity = value;
+            }
+        }
+    }
+    private uint _Quantity;
 }
