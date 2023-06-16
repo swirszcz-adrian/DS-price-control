@@ -110,7 +110,7 @@ class Consumer
     /// <remarks>
     /// The constructor initializes the StageInfo structure with default values, sets up a timer to manage consumer actions, and logs the entry of the consumer to the market.
     /// </remarks>
-    public Consumer(uint id, float priceFluctuationFactor = 0.05f, float quantityFluctuationFactor = 0.05f)
+    public Consumer(uint id, float priceFluctuationFactor = 0.05f, float quantityFluctuationFactor = 0.05f, uint turnStep=1000)
     {
         this.Id = id;
         this._Producers = AddressBook.GetProducers();
@@ -125,7 +125,7 @@ class Consumer
         StageInfo.InnerStageWaitActive = false;
         StageInfo.InnerStageWaitCompleted = false;
 
-        this._ConsumerActionTimer = new System.Timers.Timer(1000);
+        this._ConsumerActionTimer = new System.Timers.Timer(turnStep);
         this._ConsumerActionTimer.Elapsed += EventManager;
         this._ConsumerActionTimer.AutoReset = true;
         this._ConsumerActionTimer.Enabled = true;
