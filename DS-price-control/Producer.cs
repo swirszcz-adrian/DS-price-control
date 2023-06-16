@@ -277,7 +277,7 @@ class Producer
         {
             item.Quantity -= quantity;
             Console.WriteLine($"{timeStamp} | Producer #{this.Id} sold {quantity} unit(s) of product #{productId} for {item.Price:0.00}$ per unit -> {item.Quantity}/{item.MaxStorageSpace} remaining.");
-            return new StockItem(item.Product, item.Price, item.Quantity);
+            return new StockItem(item.Product, item.Price, quantity);
             
         }
     }

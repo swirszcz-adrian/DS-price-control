@@ -244,6 +244,7 @@ class Consumer
     /// </remarks>
     private void UpdateProductsList()
     {
+        _Producers = AddressBook.GetProducers();
         List<StockItem> allStockOnTheMarket = new List<StockItem>();
         List<Product> allProductOnTheMarket = new List<Product>();
 
