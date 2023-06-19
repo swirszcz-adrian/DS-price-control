@@ -12,7 +12,7 @@ class PriceControl
     static void Main()
     {
         // To make sure logs can be written somewhere
-        System.IO.Directory.CreateDirectory("../../../logs");
+        // System.IO.Directory.CreateDirectory("../../../logs");
         Console.WriteLine($"{DateTime.Now.ToString("HH:mm:ss.ffffff")} | Simulation started, press ENTER to end");
 
         /*// Tworzenie producentów

@@ -130,7 +130,7 @@ class Consumer
         this._ConsumerActionTimer.AutoReset = true;
         this._ConsumerActionTimer.Enabled = true;
 
-        using (StreamWriter w = File.CreateText($"../../../logs/consumer{this.Id}.txt")) { }
+        // using (StreamWriter w = File.CreateText($"../../../logs/consumer{this.Id}.txt")) { }
         LogToFile("Consumer has entered the market!");
     }
 
@@ -595,12 +595,12 @@ class Consumer
     /// </remarks>
     private void LogToFile(string logMessage)
     {
-        using (StreamWriter w = File.AppendText($"../../../logs/consumer{this.Id}.txt"))
-        {
-            _LogCounter++;
-            string stringTime = DateTime.Now.ToString($"HH:mm:ss.ffffff");
-            w.WriteLine($"{_LogCounter} | {stringTime} | {logMessage}");
-        }
+        // using (StreamWriter w = File.AppendText($"../../../logs/consumer{this.Id}.txt"))
+        // {
+        //     _LogCounter++;
+        //     string stringTime = DateTime.Now.ToString($"HH:mm:ss.ffffff");
+        //     w.WriteLine($"{_LogCounter} | {stringTime} | {logMessage}");
+        // }
     }
 
     public uint Id { get; }

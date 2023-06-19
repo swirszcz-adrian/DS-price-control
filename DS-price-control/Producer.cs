@@ -116,10 +116,10 @@ class Producer
         this._ProductionTimer.Enabled = true;
         this._Magazine = new List<ProducerItem>() { producerItem };
         this.RequestAdditionToAddressBook();
-        using (StreamWriter w = File.CreateText($"../../../logs/producer{this.Id}.csv"))
-        {
-            w.WriteLine("timestamp,product_id,product_name,current_price,base_price,curent_quantity,max_quantity");
-        }
+        // using (StreamWriter w = File.CreateText($"../../../logs/producer{this.Id}.csv"))
+        // {
+        //     w.WriteLine("timestamp,product_id,product_name,current_price,base_price,curent_quantity,max_quantity");
+        // }
     }
 
     public Producer(uint id, uint ProductionTimeMS, List<ProducerItem> initialMagazineState)
@@ -135,10 +135,10 @@ class Producer
             this.AddItemToMagazine(item);
         }
         this.RequestAdditionToAddressBook();
-        using (StreamWriter w = File.CreateText($"../../../logs/producer{this.Id}.csv"))
-        {
-            w.WriteLine("timestamp,product_id,product_name,current_price,base_price,curent_quantity,max_quantity");
-        }
+        // using (StreamWriter w = File.CreateText($"../../../logs/producer{this.Id}.csv"))
+        // {
+        //     w.WriteLine("timestamp,product_id,product_name,current_price,base_price,curent_quantity,max_quantity");
+        // }
     }
 
     ~Producer()
@@ -187,7 +187,7 @@ class Producer
     {
         this.ProduceGoods();
         this.UpdatePrices();
-        this.LogStatus(e);
+        // this.LogStatus(e);
     }
 
     private void ProduceGoods()
