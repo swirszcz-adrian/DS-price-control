@@ -51,14 +51,14 @@ class PriceControl
                 new Producer.ProducerItem(prd3, 34, 130)
                 }
             );
-        Producer producer2 = new Producer(1, 100,
+        Producer producer2 = new Producer(1, 150,
             new List<Producer.ProducerItem>() {
                 new Producer.ProducerItem(prd1, 19, 200),
                 new Producer.ProducerItem(prd2, 20, 200),
                 new Producer.ProducerItem(prd4, 80, 20)
                 }
             );
-        Producer producer3 = new Producer(2, 100,
+        Producer producer3 = new Producer(2, 200,
             new List<Producer.ProducerItem>() {
                 new Producer.ProducerItem(prd3, 40, 190),
                 new Producer.ProducerItem(prd4, 78, 30)
@@ -66,10 +66,21 @@ class PriceControl
             );
 
         Consumer janusz1 = new Consumer(0);
-        Thread.Sleep(200);
+        //Thread.Sleep(200);
         Consumer janusz2 = new Consumer(1);
-        Thread.Sleep(200);
+        //Thread.Sleep(200);
         Consumer janusz3 = new Consumer(2);
+        Consumer janusz4 = new Consumer(4);
+        Consumer janusz5 = new Consumer(5);
+        Consumer janusz6 = new Consumer(6);
+        Consumer janusz7 = new Consumer(7);
+        Consumer janusz8 = new Consumer(8);
+        Consumer janusz9 = new Consumer(9);
+        Consumer janusz10 = new Consumer(10);
+        Consumer janusz11 = new Consumer(11);
+        Consumer janusz12 = new Consumer(12);
+        Consumer janusz13 = new Consumer(13);
+        Consumer janusz14 = new Consumer(14);
         Console.ReadLine();
 
         /*        for (int i = 0; i < 20; i++)
