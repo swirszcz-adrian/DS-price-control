@@ -77,7 +77,7 @@ class Producer
 
         public string ToCsv(string timestamp)
         {
-            return $"{timestamp},{this.Product.Id},{this.Product.Name},{this.Price:0.00},{this.BasePrice:0.00},{this.Quantity},{this.MaxStorageSpace}";
+            return $"{timestamp},{this.Product.Id},{this.Product.Name},{this.Price:0.00},{this.BasePrice:0.00},{this.Quantity},{this.MaxStorageSpace}\n";
         }
 
         public void Produce()
@@ -209,12 +209,14 @@ class Producer
     private void LogStatus(ElapsedEventArgs e)
     {
         string timestamp = e.SignalTime.ToString("HH:mm:ss.ffffff");
+        string output = string.Empty;
+        foreach (ProducerItem Item in this._Magazine)
+        {
+            output += Item.ToCsv(timestamp);
+        }
         using (StreamWriter w = File.AppendText($"../../../logs/producer{this.Id}.csv"))
         {
-            foreach (ProducerItem Item in this._Magazine)
-            {
-                w.WriteLine(Item.ToCsv(timestamp));
-            }
+            w.Write(output);
         }
 
     }

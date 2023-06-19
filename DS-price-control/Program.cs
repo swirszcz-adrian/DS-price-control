@@ -44,21 +44,21 @@ class PriceControl
         Product prd3 = new Product(2, "Scyzoryk", "Wiele funkcji.");
         Product prd4 = new Product(3, "Garnek", "Nie wrzucać do ognia!");
 
-        Producer producer1 = new Producer(0, 500,
+        Producer producer1 = new Producer(0, 100,
             new List<Producer.ProducerItem> () {
                 new Producer.ProducerItem(prd1, 22, 100),
                 new Producer.ProducerItem(prd2, 50, 50),
                 new Producer.ProducerItem(prd3, 34, 130)
                 }
             );
-        Producer producer2 = new Producer(1, 600,
+        Producer producer2 = new Producer(1, 100,
             new List<Producer.ProducerItem>() {
                 new Producer.ProducerItem(prd1, 19, 200),
                 new Producer.ProducerItem(prd2, 20, 200),
                 new Producer.ProducerItem(prd4, 80, 20)
                 }
             );
-        Producer producer3 = new Producer(2, 400,
+        Producer producer3 = new Producer(2, 100,
             new List<Producer.ProducerItem>() {
                 new Producer.ProducerItem(prd3, 40, 190),
                 new Producer.ProducerItem(prd4, 78, 30)
